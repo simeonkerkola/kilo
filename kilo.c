@@ -10,6 +10,8 @@ void disableRawMode() {
 
 void enableRawMode() {
   tcgetattr(STDIN_FILENO, &orig_termios);
+
+  // Runs when the program exits
   atexit(disableRawMode);
 
   struct termios raw = orig_termios;
