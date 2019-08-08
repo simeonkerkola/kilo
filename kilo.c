@@ -30,13 +30,18 @@ void enableRawMode() {
   // ISIG turns off Ctrl-C and Ctrl-Z signals, IEXTEN Ctrl-V
   raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 
+  raw.c_cc[VMIN] = 0;
+  raw.c_cc[VTIME] = 1;
+
   tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw);
 }
 
 int main() {
   enableRawMode();
-  char c;
-  while (read(STDOUT_FILENO, &c, 1) == 1 && c != 'q') {
+  
+  while (1) {
+    char c = '\0';
+    read(STDOUT_FILENO, &c, 1);
     // iscntrl() tests whether a character is a control character, (enter, esc, ...).
     if (iscntrl(c)) {
       printf("%d\r\n",c);
@@ -44,6 +49,7 @@ int main() {
       // %d tells printf to format the byte as a decimal number (its ASCII code), and %c tells it to write out the byte directly, as a character.
       printf("%d ('%c')\r\n",c,c);
     }
+    if (c == 'q') break;
   }
   return 0;
 }
