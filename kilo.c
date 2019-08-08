@@ -19,8 +19,16 @@ void enableRawMode() {
 
   struct termios raw = orig_termios;
 
+  // IXON turns off Ctrl-S and Ctrl-Q signals. ICRNL fixes Ctrl-M reading as return char
+  raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+
+  raw.c_oflag &= ~(OPOST);
+
+   raw.c_cflag |= (CS8);
+
   // ICANON turns off canonical mode. quits after pressing q
-  raw.c_lflag &= ~(ECHO | ICANON);
+  // ISIG turns off Ctrl-C and Ctrl-Z signals, IEXTEN Ctrl-V
+  raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 
   tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw);
 }
@@ -31,10 +39,10 @@ int main() {
   while (read(STDOUT_FILENO, &c, 1) == 1 && c != 'q') {
     // iscntrl() tests whether a character is a control character, (enter, esc, ...).
     if (iscntrl(c)) {
-      printf("%d\n",c);
+      printf("%d\r\n",c);
     } else {
       // %d tells printf to format the byte as a decimal number (its ASCII code), and %c tells it to write out the byte directly, as a character.
-      printf("%d ('%c')\n",c,c);
+      printf("%d ('%c')\r\n",c,c);
     }
   }
   return 0;
