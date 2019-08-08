@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+#include <ctype.h>
+#include <stdio.h>
 
 // Make a copy of original termios, so wen can return the terminal state on exit
 struct termios orig_termios;
@@ -26,6 +28,13 @@ void enableRawMode() {
 int main() {
   enableRawMode();
   char c;
-  while (read(STDOUT_FILENO, &c, 1) == 1 && c != 'q');
+  while (read(STDOUT_FILENO, &c, 1) == 1 && c != 'q') {
+    if (iscntrl(c)) {
+      printf("%d\n",c);
+    } else {
+      // %d tells printf to format the byte as a decimal number (its ASCII code), and %c tells it to write out the byte directly, as a character.
+      printf("%d ('%c')\n",c,c);
+    }
+  }
   return 0;
 }
