@@ -2,6 +2,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+// Make a copy of original termios, so wen can return the terminal state on exit
 struct termios orig_termios;
 
 void disableRawMode() {
@@ -15,7 +16,6 @@ void enableRawMode() {
   atexit(disableRawMode);
 
   struct termios raw = orig_termios;
-  tcgetattr(STDIN_FILENO, &raw);
 
   raw.c_lflag &= ~(ECHO);
 
