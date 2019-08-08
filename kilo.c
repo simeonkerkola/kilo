@@ -29,6 +29,7 @@ int main() {
   enableRawMode();
   char c;
   while (read(STDOUT_FILENO, &c, 1) == 1 && c != 'q') {
+    // iscntrl() tests whether a character is a control character, (enter, esc, ...).
     if (iscntrl(c)) {
       printf("%d\n",c);
     } else {
