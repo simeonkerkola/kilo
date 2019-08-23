@@ -1,11 +1,16 @@
+/*** INCLUDES ***/
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <stdio.h>
 
+/*** DATA ***/
+
 // Make a copy of original termios, so wen can return the terminal state on exit
 struct termios orig_termios;
+
+/*** TERMINAL ***/
 
 void die(const char *s) {
   // prints an error message and exits the program
@@ -44,6 +49,8 @@ void enableRawMode() {
 
   if (tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
+
+/*** INIT ***/
 
 int main() {
   enableRawMode();
