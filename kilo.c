@@ -14,11 +14,13 @@ void die(const char *s) {
 }
 
 void disableRawMode() {
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+// tcsetattr(), tcgetattr(), and read() all return -1 on failure, and set the errno value to indicate the error.
+  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
+    die("tcgetattr");
 }
 
 void enableRawMode() {
-  tcgetattr(STDIN_FILENO, &orig_termios);
+  if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) die("tcgetattr");
 
   // Runs when the program exits
   atexit(disableRawMode);
@@ -40,7 +42,7 @@ void enableRawMode() {
   raw.c_cc[VMIN] = 0; // sets the minimum number of bytes of input needed before read() can return
   raw.c_cc[VTIME] = 1; // sets the maximum amount of time to wait before read() returns
 
-  tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw);
+  if (tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
 
 int main() {
@@ -48,7 +50,7 @@ int main() {
   
   while (1) {
     char c = '\0';
-    read(STDOUT_FILENO, &c, 1);
+    if (read(STDOUT_FILENO, &c, 1) == -1) die("read");
     // iscntrl() tests whether a character is a control character, (enter, esc, ...).
     if (iscntrl(c)) {
       printf("%d\r\n",c);
