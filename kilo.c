@@ -7,6 +7,12 @@
 // Make a copy of original termios, so wen can return the terminal state on exit
 struct termios orig_termios;
 
+void die(const char *s) {
+  // prints an error message and exits the program
+  perror(s);
+  exit(1); // exit status 1 indicates failure 
+}
+
 void disableRawMode() {
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
 }
@@ -30,8 +36,9 @@ void enableRawMode() {
   // ISIG turns off Ctrl-C and Ctrl-Z signals, IEXTEN Ctrl-V
   raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 
-  raw.c_cc[VMIN] = 0;
-  raw.c_cc[VTIME] = 1;
+  //  “cc = control characters”
+  raw.c_cc[VMIN] = 0; // sets the minimum number of bytes of input needed before read() can return
+  raw.c_cc[VTIME] = 1; // sets the maximum amount of time to wait before read() returns
 
   tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw);
 }
