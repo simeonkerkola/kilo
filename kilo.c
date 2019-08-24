@@ -31,7 +31,7 @@ void die(const char *s) {
   // Clear the screen before the error message is shown
   clearScreen();
   setCursor();
-  
+
   // prints an error message and exits the program
   perror(s);
   exit(1); // exit status 1 indicates failure 
@@ -81,8 +81,21 @@ char editorReadKey() {
 
 /*** OUTPUT ***/
 
+  // Will handle drawing each row of the buffer of text being edited.
+  // Row is not part of the file and can’t contain any text.
+void editorDrawRows() {
+  int y;
+  for (y = 0; y < 24; y++) {
+    write(STDOUT_FILENO, "~\r\n", 3);
+  }
+}
+
 void editorRefreshScreen() {
   clearScreen();
+  setCursor();
+  editorDrawRows();
+
+  // After we’re done drawing, we reposition the cursor back up at the top-left corner. 
   setCursor();
 }
 
