@@ -69,6 +69,9 @@ void editorRefreshScreen() {
   // We are writing 4 bytes out to the terminal. 
   // The first byte is \x1b, which is the escape character, or 27 in decimal. The other three bytes are [2J
   write(STDOUT_FILENO, "\x1b[2J", 4);
+
+  // H command (Cursor Position)
+  write(STDOUT_FILENO, "\x1b[H",3);
 }
 
 /*** INPUT ***/
