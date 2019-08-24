@@ -5,6 +5,9 @@
 #include <ctype.h>
 #include <stdio.h>
 
+/*** DEFINES ***/
+#define CTRL_KEY(k) ((k) & 0x1f)
+
 /*** DATA ***/
 
 // Make a copy of original termios, so wen can return the terminal state on exit
@@ -65,7 +68,7 @@ int main() {
       // %d tells printf to format the byte as a decimal number (its ASCII code), and %c tells it to write out the byte directly, as a character.
       printf("%d ('%c')\r\n",c,c);
     }
-    if (c == 'q') break;
+    if (c == CTRL_KEY('q')) break;
   }
   return 0;
 }
