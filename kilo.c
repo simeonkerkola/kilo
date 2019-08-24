@@ -56,7 +56,7 @@ void enableRawMode() {
 
 // wait for one keypress, and return it.
 char editorReadKey() {
-  int nread;
+  int nread = 0;
   char c;
   while ((nread == read(STDIN_FILENO, &c, 1 )) != 1) {
     if (nread == -1 && errno != EAGAIN) die("read");
@@ -64,8 +64,14 @@ char editorReadKey() {
   return c;
 }
 
-/*** INPUT ***/
+/*** OUTPUT ***/
+void editorRefreshScreen() {
+  // We are writing 4 bytes out to the terminal. 
+  // The first byte is \x1b, which is the escape character, or 27 in decimal. The other three bytes are [2J
+  write(STDOUT_FILENO, "\x1b[2J", 4);
+}
 
+/*** INPUT ***/
 
 // waits for a keypress, and then handles it.
 void editorProcessKeypress() {
@@ -84,6 +90,7 @@ int main() {
   enableRawMode();
   
   while (1) {
+    editorRefreshScreen();
     editorProcessKeypress();
   }
   return 0;
