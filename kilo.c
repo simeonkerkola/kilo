@@ -16,7 +16,22 @@ struct termios orig_termios;
 
 /*** TERMINAL ***/
 
+void clearScreen() {
+  // We are writing 4 bytes out to the terminal. 
+  // The first byte is \x1b, which is the escape character, or 27 in decimal. The other three bytes are [2J
+  write(STDOUT_FILENO, "\x1b[2J", 4);
+}
+
+void setCursor() {
+  // H command (Cursor Position) Sets the cursor to the top of the file
+  write(STDOUT_FILENO, "\x1b[H", 3);
+}
+
 void die(const char *s) {
+  // Clear the screen before the error message is shown
+  clearScreen();
+  setCursor();
+  
   // prints an error message and exits the program
   perror(s);
   exit(1); // exit status 1 indicates failure 
@@ -65,13 +80,10 @@ char editorReadKey() {
 }
 
 /*** OUTPUT ***/
-void editorRefreshScreen() {
-  // We are writing 4 bytes out to the terminal. 
-  // The first byte is \x1b, which is the escape character, or 27 in decimal. The other three bytes are [2J
-  write(STDOUT_FILENO, "\x1b[2J", 4);
 
-  // H command (Cursor Position) Sets the cursor to the top of the file
-  write(STDOUT_FILENO, "\x1b[H",3);
+void editorRefreshScreen() {
+  clearScreen();
+  setCursor();
 }
 
 /*** INPUT ***/
@@ -82,6 +94,8 @@ void editorProcessKeypress() {
   switch (c)
   {
   case CTRL_KEY('q'):
+    clearScreen();
+    setCursor();
     exit(0);
     break;
   }
