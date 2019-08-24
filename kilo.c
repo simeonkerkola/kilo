@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <errno.h>
 
 /*** DEFINES ***/
 #define CTRL_KEY(k) ((k) & 0x1f)
@@ -53,22 +54,37 @@ void enableRawMode() {
   if (tcsetattr(STDIN_FILENO,TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
 
+// wait for one keypress, and return it.
+char editorReadKey() {
+  int nread;
+  char c;
+  while ((nread == read(STDIN_FILENO, &c, 1 )) != 1) {
+    if (nread == -1 && errno != EAGAIN) die("read");
+  }
+  return c;
+}
+
+/*** INPUT ***/
+
+
+// waits for a keypress, and then handles it.
+void editorProcessKeypress() {
+  char c = editorReadKey();
+  switch (c)
+  {
+  case CTRL_KEY('q'):
+    exit(0);
+    break;
+  }
+}
+
 /*** INIT ***/
 
 int main() {
   enableRawMode();
   
   while (1) {
-    char c = '\0';
-    if (read(STDOUT_FILENO, &c, 1) == -1) die("read");
-    // iscntrl() tests whether a character is a control character, (enter, esc, ...).
-    if (iscntrl(c)) {
-      printf("%d\r\n",c);
-    } else {
-      // %d tells printf to format the byte as a decimal number (its ASCII code), and %c tells it to write out the byte directly, as a character.
-      printf("%d ('%c')\r\n",c,c);
-    }
-    if (c == CTRL_KEY('q')) break;
+    editorProcessKeypress();
   }
   return 0;
 }
