@@ -70,7 +70,7 @@ void editorRefreshScreen() {
   // The first byte is \x1b, which is the escape character, or 27 in decimal. The other three bytes are [2J
   write(STDOUT_FILENO, "\x1b[2J", 4);
 
-  // H command (Cursor Position)
+  // H command (Cursor Position) Sets the cursor to the top of the file
   write(STDOUT_FILENO, "\x1b[H",3);
 }
 
